@@ -1,0 +1,26 @@
+{
+  "name": "application",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PetarPandzharov/AI-Coding-Basics-project-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/PetarPandzharov/AI-Coding-Basics-project-server/issues"
+  },
+  "homepage": "https://github.com/PetarPandzharov/AI-Coding-Basics-project-server#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
