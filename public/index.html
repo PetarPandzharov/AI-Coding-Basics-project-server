@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workout API Client</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Workout API Client</h1>
+
+    <section class="card">
+      <h2>GET Workouts</h2>
+      <div class="row">
+        <button id="btn-get-workouts">Load All Workouts</button>
+        <select id="day-select">
+          <option value="1">Monday</option>
+          <option value="2">Tuesday</option>
+          <option value="3">Wednesday</option>
+          <option value="4">Thursday</option>
+          <option value="5">Friday</option>
+          <option value="6">Saturday</option>
+          <option value="7">Sunday</option>
+        </select>
+        <button id="btn-get-day">Load Selected Day</button>
+      </div>
+      <div id="get-result" class="result"></div>
+    </section>
+
+    <section class="card">
+      <h2>POST Workout</h2>
+      <form id="post-form">
+        <label>
+          Day ID
+          <input type="number" id="dayId" min="1" max="7" value="1" required>
+        </label>
+        <label>
+          Exercise ID
+          <input type="number" id="exerciseId" min="1" value="22" required>
+        </label>
+        <label>
+          Name
+          <input type="text" id="exerciseName" value="Deadlift" required>
+        </label>
+        <label>
+          Reps / Duration
+          <input type="text" id="exerciseInfo" value="10" required>
+        </label>
+        <button type="submit">Add Exercise</button>
+      </form>
+      <div id="post-result" class="result"></div>
+    </section>
+  </div>
+
+  <script>
+    const getResult = document.getElementById('get-result');
+    const postResult = document.getElementById('post-result');
+    const btnGetWorkouts = document.getElementById('btn-get-workouts');
+    const btnGetDay = document.getElementById('btn-get-day');
+    const daySelect = document.getElementById('day-select');
+    const postForm = document.getElementById('post-form');
+
+    function showJson(element, data) {
+      element.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function renderWorkouts(data) {
+      const list = document.createElement('ul');
+      list.className = 'workout-list';
+
+      const plans = data.plans || data;
+      list.innerHTML = '';
+
+      if (!Array.isArray(plans)) {
+        showJson(getResult, data);
+        return;
+      }
+
+      plans.flat().forEach(exercise => {
+        const item = document.createElement('li');
+        item.textContent = exercise.duration
+          ? `${exercise.name} — ${exercise.duration}`
+          : `${exercise.name} — ${exercise.reps || '-'} reps`;
+        list.appendChild(item);
+      });
+
+      getResult.innerHTML = '';
+      getResult.appendChild(list);
+    }
+
+    async function loadWorkouts() {
+      const res = await fetch('/workout');
+      const json = await res.json();
+      renderWorkouts(json);
+    }
+
+    async function loadDay(dayId) {
+      const res = await fetch(`/workout/day/${dayId}`);
+      const json = await res.json();
+      renderWorkouts(json);
+    }
+
+    async function postExercise(event) {
+      event.preventDefault();
+      const dayId = Number(document.getElementById('dayId').value);
+      const exerciseId = Number(document.getElementById('exerciseId').value);
+      const name = document.getElementById('exerciseName').value;
+      const info = document.getElementById('exerciseInfo').value;
+
+      const payload = {
+        dayId,
+        id: exerciseId,
+        name,
+        reps: Number(info) || undefined,
+        duration: isNaN(Number(info)) ? info : undefined
+      };
+
+      const res = await fetch('/workout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const json = await res.json();
+      showJson(postResult, json);
+    }
+
+    btnGetWorkouts.addEventListener('click', loadWorkouts);
+    btnGetDay.addEventListener('click', () => loadDay(daySelect.value));
+    postForm.addEventListener('submit', postExercise);
+  </script>
+</body>
+</html>
