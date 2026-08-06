@@ -54,12 +54,26 @@ function addExercise(dayId, exercise) {
 }
 
 function getWorkout() {
+  try {
+    if (!workout || workout.length === 0) {
+      throw new Error('Workout data is not initialized.');
+    }
+  } catch (error) {
+    console.error('Error retrieving workout:', error.message);
+    return [];
+  }
   return workout;
 }
 
 function getWorkoutByDay(dayId) {
-  return workout.find(dayExercises => dayExercises[0]?.dayId === dayId) || null;
-}
+  try {
+    return workout.find(dayExercises => dayExercises[0]?.dayId === dayId) || null;
+  } catch (error) {
+    console.error('Error retrieving workout by day:', error.message);
+    return null;
+  }
+}   
+
 
 module.exports = {
   initSampleWorkouts,
